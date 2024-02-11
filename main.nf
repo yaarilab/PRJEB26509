@@ -33,8 +33,8 @@ output:
 script:
 
 readArray = reads.toString().split(' ')	
-R1 = readArray.grep(~/.*R1.*/)[0]
-R2 = readArray.grep(~/.*R2.*/)[0]
+R1 = readArray[0]
+R2 = readArray[1]
 
 """
 case "$R1" in
