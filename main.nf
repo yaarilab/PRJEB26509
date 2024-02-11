@@ -1,7 +1,7 @@
 $HOSTNAME = ""
 params.outdir = 'results'  
 
-evaluate(new File("nextflow_header.config"))
+evaluate(new File("${params.projectDir}/nextflow_header.config"))
 params.metadata.metadata = "${params.projectDir}/tools.json"
 
 if (!params.mate){params.mate = ""} 
