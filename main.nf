@@ -8,7 +8,7 @@ if (!params.mate){params.mate = ""}
 if (!params.reads){params.reads = ""} 
 if (!params.mate2){params.mate2 = ""} 
 
-Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_7;g_1_mate_g9_5;g_1_mate_g9_0;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g38_11;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_8;g_1_mate_g52_1;g_1_mate_g52_0;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
+Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g38_11;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_8;g_1_mate_g52_1;g_1_mate_g52_0;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
 if (params.reads){
 Channel
 	.fromFilePairs( params.reads , size: params.mate == "single" ? 1 : params.mate == "pair" ? 2 : params.mate == "triple" ? 3 : params.mate == "quadruple" ? 4 : -1 )
@@ -121,13 +121,12 @@ if(mate=="pair"){
 
 process Filter_Sequence_Quality_parse_log_FS {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*table.tab$/) "FQ_log_table/$filename"}
 input:
  set val(name), file(log_file) from g9_0_logFile1_g9_5
  val mate from g_1_mate_g9_5
 
 output:
- set val(name), file("*table.tab")  into g9_5_logFile0_g9_7, g9_5_logFile0_g9_16
+ file "*table.tab"  into g9_5_logFile0_g9_7, g9_5_logFile0_g9_16
 
 script:
 readArray = log_file.toString()
@@ -143,7 +142,7 @@ process Filter_Sequence_Quality_report_filter_Seq_Quality {
 
 input:
  val mate from g_1_mate_g9_7
- set val(name), file(log_files) from g9_5_logFile0_g9_7
+ file log_files from g9_5_logFile0_g9_7
 
 output:
  file "*.rmd"  into g9_7_rMarkdown0_g9_16
