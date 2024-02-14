@@ -151,7 +151,7 @@ output:
 
 shell:
 
-if(matee=="pair"){
+if(mate=="pair"){
 	readArray = log_files.toString().split(' ')	
 	R1 = readArray[0]
 	R2 = readArray[1]
@@ -2727,7 +2727,7 @@ json_data <- list(
 json_string <- toJSON(json_data, pretty = TRUE, auto_unbox = TRUE)
 print(json_string)
 # Write the JSON string to a file
-writeLines(json_string, "preprocessed_metadata.json")
+writeLines(json_string, "pre_processed_metadata.json")
 """
 
 }
