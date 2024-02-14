@@ -155,6 +155,7 @@ if(mate=="pair"){
 	R1 = readArray[0]
 	R2 = readArray[1]
 
+	name = R1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -211,7 +212,7 @@ if(mate=="pair"){
 
 	readArray = log_files.toString().split(' ')
 	R1 = readArray[0]
-	
+	name = R1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
