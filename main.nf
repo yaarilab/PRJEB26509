@@ -142,7 +142,7 @@ ParseLog.py -l ${readArray}  -f ID QUALITY
 process Filter_Sequence_Quality_report_filter_Seq_Quality {
 
 input:
- val matee from g_1_mate_g9_7
+ val mate from g_1_mate_g9_7
  set val(name), file(log_files) from g9_5_logFile0_g9_7
 
 output:
