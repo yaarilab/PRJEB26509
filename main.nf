@@ -18,7 +18,7 @@ Channel
 	g_2_reads_g_87 = Channel.empty()
  }
 
-Channel.value(params.mate2).into{g_64_mate_g_66;g_64_mate_g_59;g_64_mate_g_60;g_64_mate_g56_9;g_64_mate_g56_12;g_64_mate_g56_11}
+Channel.value(params.mate2).into{g_64_mate_g_59;g_64_mate_g_60;g_64_mate_g_66;g_64_mate_g56_9;g_64_mate_g56_12;g_64_mate_g56_11}
 
 
 process unizp {
@@ -2281,6 +2281,26 @@ if(mate=="pair"){
 }
 
 
+process parse_log_FSQ {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*table.tab$/) "FS_maskqual_log/$filename"}
+input:
+ set val(name), file(log_file) from g_59_logFile3_g_66
+ val mate from g_64_mate_g_66
+
+output:
+ set val(name), file("*table.tab")  into g_66_logFile00
+
+script:
+readArray = log_file.toString()
+
+"""
+ParseLog.py -l ${readArray}  -f ID QUALITY
+"""
+
+}
+
+
 process filter_seq_missing {
 
 input:
@@ -2487,26 +2507,6 @@ output:
 #!/bin/sh 
 awk '/^>/{f=""; split(\$0,b,"PRIMER="); if(substr(b[2],1,3)=="IGK" || substr(b[2],1,3)=="IGL"){f="${name}_Light.fasta"} else {f="${name}_Heavy.fasta"}; print \$0 > f ; next } {print \$0 > f} ' ${reads}
 """
-}
-
-
-process parse_log_FSQ {
-
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "FS_maskqual_log/$filename"}
-input:
- set val(name), file(log_file) from g_59_logFile3_g_66
- val mate from g_64_mate_g_66
-
-output:
- set val(name), file("*.tab")  into g_66_logFile00
-
-script:
-readArray = log_file.toString()
-
-"""
-ParseLog.py -l ${readArray}  -f ID QUALITY
-"""
-
 }
 
 
