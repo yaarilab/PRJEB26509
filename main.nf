@@ -8,7 +8,7 @@ if (!params.mate){params.mate = ""}
 if (!params.reads){params.reads = ""} 
 if (!params.mate2){params.mate2 = ""} 
 
-Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g38_11;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_8;g_1_mate_g52_1;g_1_mate_g52_0;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
+Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_8;g_1_mate_g52_1;g_1_mate_g52_0;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
 if (params.reads){
 Channel
 	.fromFilePairs( params.reads , size: params.mate == "single" ? 1 : params.mate == "pair" ? 2 : params.mate == "triple" ? 3 : params.mate == "quadruple" ? 4 : -1 )
@@ -18,7 +18,7 @@ Channel
 	g_2_reads_g_87 = Channel.empty()
  }
 
-Channel.value(params.mate2).into{g_64_mate_g_66;g_64_mate_g_59;g_64_mate_g_60;g_64_mate_g56_9;g_64_mate_g56_12;g_64_mate_g56_11}
+Channel.value(params.mate2).into{g_64_mate_g_66;g_64_mate_g_59;g_64_mate_g_60;g_64_mate_g56_11;g_64_mate_g56_9;g_64_mate_g56_12}
 
 
 process unizp {
@@ -489,13 +489,12 @@ if(mate=="pair"){
 
 process Mask_Primer_parse_log_MP {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "MP_log_table/$filename"}
 input:
  val mate from g_1_mate_g38_9
  set val(name), file(log_file) from g38_11_logFile2_g38_9
 
 output:
- set val(name), file("*.tab")  into g38_9_logFile0_g38_12
+ file "*table.tab"  into g38_9_logFile0_g38_12, g38_9_logFile0_g38_19
 
 script:
 readArray = log_file.toString()	
@@ -510,20 +509,20 @@ ParseLog.py -l ${readArray}  -f ID PRIMER BARCODE ERROR
 process Mask_Primer_try_report_maskprimer {
 
 input:
- set val(name), file(primers) from g38_9_logFile0_g38_12
- val matee from g_1_mate_g38_12
+ file primers from g38_9_logFile0_g38_12
+ val mate from g_1_mate_g38_12
 
 output:
- file "*.rmd"  into g38_12_rMarkdown0_g38_16
+ file "*.rmd"  into g38_12_rMarkdown0_g38_19
 
 
 shell:
 
-if(matee=="pair"){
+if(mate=="pair"){
 	readArray = primers.toString().split(' ')	
 	primers_1 = readArray[0]
 	primers_2 = readArray[1]
-
+	name = primers_1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -609,8 +608,8 @@ if(matee=="pair"){
 }else{
 
 	readArray = primers.toString().split(' ')
-	primers = readArray.grep(~/.*.tab*/)[0]
-
+	primers = readArray[0]
+	name = primers_1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -695,15 +694,16 @@ if(matee=="pair"){
 }
 
 
-process Mask_Primer_render_rmarkdown {
+process Mask_Primer_presto_render_rmarkdown {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "MP_report_html/$filename"}
 input:
- file rmk from g38_12_rMarkdown0_g38_16
+ file rmk from g38_12_rMarkdown0_g38_19
+ file log_file from g38_9_logFile0_g38_19
 
 output:
- file "*.html"  into g38_16_outputFileHTML00
- file "*csv" optional true  into g38_16_csvFile11
+ file "*.html"  into g38_19_outputFileHTML00
+ file "*csv" optional true  into g38_19_csvFile11
 
 """
 
@@ -1996,13 +1996,12 @@ if(mate=="pair"){
 
 process Mask_Primer_C_region_parse_log_MP {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "MP_log_table_c_region/$filename"}
 input:
  val mate from g_64_mate_g56_9
  set val(name), file(log_file) from g56_11_logFile2_g56_9
 
 output:
- set val(name), file("*.tab")  into g56_9_logFile0_g56_12
+ file "*table.tab"  into g56_9_logFile0_g56_12, g56_9_logFile0_g56_19
 
 script:
 readArray = log_file.toString()	
@@ -2017,20 +2016,20 @@ ParseLog.py -l ${readArray}  -f ID PRIMER BARCODE ERROR
 process Mask_Primer_C_region_try_report_maskprimer {
 
 input:
- set val(name), file(primers) from g56_9_logFile0_g56_12
- val matee from g_64_mate_g56_12
+ file primers from g56_9_logFile0_g56_12
+ val mate from g_64_mate_g56_12
 
 output:
- file "*.rmd"  into g56_12_rMarkdown0_g56_16
+ file "*.rmd"  into g56_12_rMarkdown0_g56_19
 
 
 shell:
 
-if(matee=="pair"){
+if(mate=="pair"){
 	readArray = primers.toString().split(' ')	
 	primers_1 = readArray[0]
 	primers_2 = readArray[1]
-
+	name = primers_1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -2116,8 +2115,8 @@ if(matee=="pair"){
 }else{
 
 	readArray = primers.toString().split(' ')
-	primers = readArray.grep(~/.*.tab*/)[0]
-
+	primers = readArray[0]
+	name = primers_1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -2202,15 +2201,16 @@ if(matee=="pair"){
 }
 
 
-process Mask_Primer_C_region_render_rmarkdown {
+process Mask_Primer_C_region_presto_render_rmarkdown {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "MP_report_html_c_region/$filename"}
 input:
- file rmk from g56_12_rMarkdown0_g56_16
+ file rmk from g56_12_rMarkdown0_g56_19
+ file log_file from g56_9_logFile0_g56_19
 
 output:
- file "*.html"  into g56_16_outputFileHTML00
- file "*csv" optional true  into g56_16_csvFile11
+ file "*.html"  into g56_19_outputFileHTML00
+ file "*csv" optional true  into g56_19_csvFile11
 
 """
 
