@@ -489,6 +489,7 @@ if(mate=="pair"){
 
 process Mask_Primer_parse_log_MP {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*table.tab$/) "MP_log_table/$filename"}
 input:
  val mate from g_1_mate_g38_9
  set val(name), file(log_file) from g38_11_logFile2_g38_9
@@ -868,6 +869,7 @@ def args_creator_bc(barcode_field, primer_field, act, copy_field, mincount, minq
 
 process Build_Consensus_build_consensus {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /BC.*$/) "BC_log_table/$filename"}
 input:
  set val(name),file(reads) from g52_0_reads0_g22_10
  val mate from g_1_mate_g22_10
@@ -1011,6 +1013,7 @@ if(mate=="pair"){
 
 process Assemble_pairs_align_assemble_pairs {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /AP_.*$/) "AP_log_table/$filename"}
 input:
  set val(name),file(reads) from g_84_reads0_g28_12
  val mate from g_1_mate_g28_12
@@ -1018,7 +1021,7 @@ input:
 output:
  set val(name),file("*_assemble-pass.f*")  into g28_12_reads0_g_83
  set val(name),file("AP_*")  into g28_12_logFile1_g28_15
- set val(name),file("*_assemble-fail.f*") optional true  into g28_12_reads_failed22
+ set val(name),file("*_assemble-fail.f*") optional true  into g28_12_reads_failed2_g78_12
  set val(name),file("out*")  into g28_12_logFile33
 
 script:
@@ -1714,7 +1717,9 @@ rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_di
 
 process Assemble_pairs_reference_assemble_pairs {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /AP_.*$/) "AP_reference_log_table/$filename"}
 input:
+ set val(name),file(reads) from g28_12_reads_failed2_g78_12
  val mate from g_1_mate_g78_12
 
 output:
@@ -1995,6 +2000,7 @@ if(mate=="pair"){
 
 process Mask_Primer_C_region_parse_log_MP {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*table.tab$/) "MP_log_table_c_region/$filename"}
 input:
  val mate from g_64_mate_g56_9
  set val(name), file(log_file) from g56_11_logFile2_g56_9
@@ -2658,6 +2664,7 @@ if(matee=="pair"){
 
 process Assemble_pairs_reference_presto_render_rmarkdown {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "AP_reference_log/$filename"}
 input:
  file rmk from g78_19_rMarkdown0_g78_25
  file log_file from g78_15_logFile0_g78_25
