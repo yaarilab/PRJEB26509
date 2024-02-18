@@ -8,7 +8,7 @@ if (!params.mate){params.mate = ""}
 if (!params.reads){params.reads = ""} 
 if (!params.mate2){params.mate2 = ""} 
 
-Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_0;g_1_mate_g52_1;g_1_mate_g52_8;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
+Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_10;g_1_mate_g22_12;g_1_mate_g22_14;g_1_mate_g52_0;g_1_mate_g52_1;g_1_mate_g52_8;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
 if (params.reads){
 Channel
 	.fromFilePairs( params.reads , size: params.mate == "single" ? 1 : params.mate == "pair" ? 2 : params.mate == "triple" ? 3 : params.mate == "quadruple" ? 4 : -1 )
@@ -1301,13 +1301,12 @@ rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_di
 
 process Build_Consensus_parse_log_BC {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "BC_log_table/$filename"}
 input:
  set val(name),file(log_file) from g22_10_logFile1_g22_12
  val mate from g_1_mate_g22_12
 
 output:
- set val(name),file("*.tab")  into g22_12_logFile0_g22_14, g22_12_logFile0_g22_20
+ file "*table.tab"  into g22_12_logFile0_g22_14, g22_12_logFile0_g22_20
 
 script:
 readArray = log_file.toString()
@@ -1322,8 +1321,8 @@ ParseLog.py -l ${readArray} -f BARCODE SEQCOUNT CONSCOUNT PRCONS PRFREQ ERROR
 process Build_Consensus_report_Build_Consensus {
 
 input:
- set val(name),file(log_files) from g22_12_logFile0_g22_14
  val matee from g_1_mate_g22_14
+ file log_files from g22_12_logFile0_g22_14
 
 output:
  file "*.rmd"  into g22_14_rMarkdown0_g22_20
@@ -1337,7 +1336,7 @@ if(matee=="pair"){
 	readArray = log_files.toString().split(' ')	
 	R1 = readArray[0]
 	R2 = readArray[1]
-
+	name = R1-"_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -1454,7 +1453,7 @@ if(matee=="pair"){
 	
 	readArray = log_files.toString().split(' ')
 	R1 = readArray[0]
-	
+	name = R1-"_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
