@@ -610,7 +610,7 @@ if(mate=="pair"){
 
 	readArray = primers.toString().split(' ')
 	primers = readArray[0]
-	name = primers_1 - "_table.tab"
+	name = primers - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -2121,7 +2121,7 @@ if(mate=="pair"){
 
 	readArray = primers.toString().split(' ')
 	primers = readArray[0]
-	name = primers_1 - "_table.tab"
+	name = primers - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
