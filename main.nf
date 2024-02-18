@@ -8,7 +8,7 @@ if (!params.mate){params.mate = ""}
 if (!params.reads){params.reads = ""} 
 if (!params.mate2){params.mate2 = ""} 
 
-Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_8;g_1_mate_g52_1;g_1_mate_g52_0;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
+Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_14;g_1_mate_g22_12;g_1_mate_g22_10;g_1_mate_g52_0;g_1_mate_g52_1;g_1_mate_g52_8;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
 if (params.reads){
 Channel
 	.fromFilePairs( params.reads , size: params.mate == "single" ? 1 : params.mate == "pair" ? 2 : params.mate == "triple" ? 3 : params.mate == "quadruple" ? 4 : -1 )
@@ -717,6 +717,7 @@ rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_di
 
 process Align_Sets_align_sets {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /AS_.*$/) "AS_log_table/$filename"}
 input:
  set val(name),file(reads) from g_55_reads0_g52_0
  val mate from g_1_mate_g52_0
@@ -1551,13 +1552,12 @@ rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_di
 
 process Align_Sets_parse_log_AS {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "AS_log_table/$filename"}
 input:
  set val(name), file(log_file) from g52_0_logFile1_g52_1
  val mate from g_1_mate_g52_1
 
 output:
- set val(name), file("*.tab")  into g52_1_logFile0_g52_8, g52_1_logFile0_g52_13
+ file "*table.tab"  into g52_1_logFile0_g52_8, g52_1_logFile0_g52_13
 
 script:
 field_to_parse = params.Align_Sets_parse_log_AS.field_to_parse
@@ -1573,8 +1573,8 @@ ParseLog.py -l ${readArray}  -f ${field_to_parse}
 process Align_Sets_report_Align_Sets {
 
 input:
- set val(name), file(log_files) from g52_1_logFile0_g52_8
  val matee from g_1_mate_g52_8
+ file log_files from g52_1_logFile0_g52_8
 
 output:
  file "*.rmd"  into g52_8_rMarkdown0_g52_13
@@ -1586,7 +1586,7 @@ if(matee=="pair"){
 	readArray = log_files.toString().split(' ')	
 	R1 = readArray[0]
 	R2 = readArray[1]
-
+	name = R1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -1641,7 +1641,7 @@ if(matee=="pair"){
 	
 	readArray = log_files.toString().split(' ')
 	R1 = readArray[0]
-	
+	name = R1 - "_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
