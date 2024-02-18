@@ -8,7 +8,7 @@ if (!params.mate){params.mate = ""}
 if (!params.reads){params.reads = ""} 
 if (!params.mate2){params.mate2 = ""} 
 
-Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_10;g_1_mate_g22_12;g_1_mate_g22_14;g_1_mate_g52_0;g_1_mate_g52_1;g_1_mate_g52_8;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g28_12;g_1_mate_g78_15;g_1_mate_g78_19;g_1_mate_g78_12}
+Channel.value(params.mate).into{g_1_mate_g_84;g_1_mate_g_55;g_1_mate_g_87;g_1_mate_g9_0;g_1_mate_g9_5;g_1_mate_g9_7;g_1_mate_g38_11;g_1_mate_g38_9;g_1_mate_g38_12;g_1_mate_g22_10;g_1_mate_g22_12;g_1_mate_g22_14;g_1_mate_g52_0;g_1_mate_g52_1;g_1_mate_g52_8;g_1_mate_g28_12;g_1_mate_g28_15;g_1_mate_g28_19;g_1_mate_g78_12;g_1_mate_g78_15;g_1_mate_g78_19}
 if (params.reads){
 Channel
 	.fromFilePairs( params.reads , size: params.mate == "single" ? 1 : params.mate == "pair" ? 2 : params.mate == "triple" ? 3 : params.mate == "quadruple" ? 4 : -1 )
@@ -1018,7 +1018,7 @@ input:
 output:
  set val(name),file("*_assemble-pass.f*")  into g28_12_reads0_g_83
  set val(name),file("AP_*")  into g28_12_logFile1_g28_15
- set val(name),file("*_assemble-fail.f*") optional true  into g28_12_reads_failed2_g78_12
+ set val(name),file("*_assemble-fail.f*") optional true  into g28_12_reads_failed22
  set val(name),file("out*")  into g28_12_logFile33
 
 script:
@@ -1133,13 +1133,12 @@ if(mate=="pair"){
 
 process Assemble_pairs_align_parse_log_AP {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "AP_log_table/$filename"}
 input:
  set val(name),file(log_file) from g28_12_logFile1_g28_15
  val mate from g_1_mate_g28_15
 
 output:
- set val(name),file("*.tab")  into g28_15_logFile0_g28_19, g28_15_logFile0_g28_25
+ file "*table.tab"  into g28_15_logFile0_g28_25, g28_15_logFile0_g28_19
 
 script:
 field_to_parse = params.Assemble_pairs_align_parse_log_AP.field_to_parse
@@ -1156,7 +1155,7 @@ ParseLog.py -l ${readArray}  -f ${field_to_parse}
 process Assemble_pairs_align_report_assemble_pairs {
 
 input:
- set val(name),file(log_files) from g28_15_logFile0_g28_19
+ file log_files from g28_15_logFile0_g28_19
  val matee from g_1_mate_g28_19
 
 output:
@@ -1169,6 +1168,7 @@ shell:
 if(matee=="pair"){
 	readArray = log_files.toString().split(' ')
 	assemble = readArray[0]
+	name = assemble-"_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
@@ -1714,9 +1714,7 @@ rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_di
 
 process Assemble_pairs_reference_assemble_pairs {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /out.*$/) "AP_reference_log/$filename"}
 input:
- set val(name),file(reads) from g28_12_reads_failed2_g78_12
  val mate from g_1_mate_g78_12
 
 output:
@@ -2513,13 +2511,12 @@ ParseLog.py -l ${readArray}  -f ID QUALITY
 
 process Assemble_pairs_reference_parse_log_AP {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tab$/) "AP_reference_log_table/$filename"}
 input:
  set val(name),file(log_file) from g78_12_logFile1_g78_15
  val mate from g_1_mate_g78_15
 
 output:
- set val(name),file("*.tab")  into g78_15_logFile0_g78_19, g78_15_logFile0_g78_25
+ file "*table.tab"  into g78_15_logFile0_g78_25, g78_15_logFile0_g78_19
 
 script:
 field_to_parse = params.Assemble_pairs_reference_parse_log_AP.field_to_parse
@@ -2536,7 +2533,7 @@ ParseLog.py -l ${readArray}  -f ${field_to_parse}
 process Assemble_pairs_reference_report_assemble_pairs {
 
 input:
- set val(name),file(log_files) from g78_15_logFile0_g78_19
+ file log_files from g78_15_logFile0_g78_19
  val matee from g_1_mate_g78_19
 
 output:
@@ -2549,6 +2546,7 @@ shell:
 if(matee=="pair"){
 	readArray = log_files.toString().split(' ')
 	assemble = readArray[0]
+	name = assemble-"_table.tab"
 	'''
 	#!/usr/bin/env perl
 	
