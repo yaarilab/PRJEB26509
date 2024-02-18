@@ -1306,7 +1306,7 @@ input:
  val mate from g_1_mate_g22_12
 
 output:
- set val(name),file("*.tab")  into g22_12_logFile0_g22_14
+ set val(name),file("*.tab")  into g22_12_logFile0_g22_14, g22_12_logFile0_g22_20
 
 script:
 readArray = log_file.toString()
@@ -1325,7 +1325,7 @@ input:
  val matee from g_1_mate_g22_14
 
 output:
- file "*.rmd"  into g22_14_rMarkdown0_g22_16
+ file "*.rmd"  into g22_14_rMarkdown0_g22_20
 
 
 
@@ -1528,15 +1528,16 @@ if(matee=="pair"){
 }
 
 
-process Build_Consensus_render_rmarkdown {
+process Build_Consensus_presto_render_rmarkdown {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "BC_report/$filename"}
 input:
- file rmk from g22_14_rMarkdown0_g22_16
+ file rmk from g22_14_rMarkdown0_g22_20
+ file log_file from g22_12_logFile0_g22_20
 
 output:
- file "*.html"  into g22_16_outputFileHTML00
- file "*csv" optional true  into g22_16_csvFile11
+ file "*.html"  into g22_20_outputFileHTML00
+ file "*csv" optional true  into g22_20_csvFile11
 
 """
 
@@ -1556,7 +1557,7 @@ input:
  val mate from g_1_mate_g52_1
 
 output:
- set val(name), file("*.tab")  into g52_1_logFile0_g52_8
+ set val(name), file("*.tab")  into g52_1_logFile0_g52_8, g52_1_logFile0_g52_13
 
 script:
 field_to_parse = params.Align_Sets_parse_log_AS.field_to_parse
@@ -1576,7 +1577,7 @@ input:
  val matee from g_1_mate_g52_8
 
 output:
- file "*.rmd"  into g52_8_rMarkdown0_g52_9
+ file "*.rmd"  into g52_8_rMarkdown0_g52_13
 
 
 shell:
@@ -1691,15 +1692,16 @@ if(matee=="pair"){
 }
 
 
-process Align_Sets_render_rmarkdown {
+process Align_Sets_presto_render_rmarkdown {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "AS_report/$filename"}
 input:
- file rmk from g52_8_rMarkdown0_g52_9
+ file rmk from g52_8_rMarkdown0_g52_13
+ file log_file from g52_1_logFile0_g52_13
 
 output:
- file "*.html"  into g52_9_outputFileHTML00
- file "*csv" optional true  into g52_9_csvFile11
+ file "*.html"  into g52_13_outputFileHTML00
+ file "*csv" optional true  into g52_13_csvFile11
 
 """
 
