@@ -2477,20 +2477,22 @@ awk '/^>/{f=""; if(\$0 ~ "IG"){f="${name}_IG.fasta"} else {f="${name}_TCR.fasta"
 
 process split_constant {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*_Light.*$/) "final_reads_light/$filename"}
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*_Heavy.*$/) "final_reads_heavy/$filename"}
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /light$/) "reads/$filename"}
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /heavy$/) "reads/$filename"}
 input:
  set val(name),file(reads) from g_71_reads0_g_72
 
 output:
- set val(name),file("*_Light*") optional true  into g_72_fastaFile00
- set val(name),file("*_Heavy*") optional true  into g_72_fastaFile11
+ file "light" optional true  into g_72_germlineDb00
+ file "heavy" optional true  into g_72_germlineDb11
 
 """
 #shell example: 
 
 #!/bin/sh 
-awk '/^>/{f=""; split(\$0,b,"PRIMER="); if(substr(b[2],1,3)=="IGK" || substr(b[2],1,3)=="IGL"){f="${name}_Light.fasta"} else {f="${name}_Heavy.fasta"}; print \$0 > f ; next } {print \$0 > f} ' ${reads}
+mkdir heavy
+mkdir light
+awk '/^>/{f=""; split(\$0,b,"PRIMER="); if(substr(b[2],1,3)=="IGK" || substr(b[2],1,3)=="IGL"){f="light/${name}.fasta"} else {f="heavy/${name}.fasta"}; print \$0 > f ; next } {print \$0 > f} ' ${reads}
 """
 }
 
